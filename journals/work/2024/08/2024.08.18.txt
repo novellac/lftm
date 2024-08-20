@@ -1,0 +1,19 @@
+Week of 2024.08.18
+==============================================================================
+
+Tuesday 08.20
+- Check for a quick fix to the z-index issue
+- Continue work on highcharts
+- Check in with Victor on WPNA event posters
+- 
+
+Soon
+==============================================================================
+- Check where we are with Websockets
+- HVAC person tomorrow 9am
+
+Reminders
+==============================================================================
+- Don't forget to be tactical, too
+- Feedback sandwiches. Reinforce good stuff, be constructive about areas for improvement
+- Foster conversation to bring people along with me; don't focus so much on being right
