@@ -1,0 +1,10 @@
+Places I see related to dark mode:
+============================================
+PROVIDE_DARK_MODE x
+useDarkMode x
+SetupDarkMode() (this is ok)
+SetupDarkMode (no quotes)
+ALLOW_DARK_MODE x
+
+
+PR made 2024.08.20

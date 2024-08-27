@@ -1,0 +1,33 @@
+Questions:
+- Will a user be able to look up reports for more than one org? (almost certainly yes)
+
+org id: 25823891 (240150 on prod)
+
+https://dev-novella.voicethread.net/login/join/org/25823891/promoted/34bc07e16 instructor link
+
+luigi
+
+mario - is this userId 12624660 ?
+
+https://dev-novella.voicethread.net/login/join/org/25823891/unpromoted/a2e1e5e26 student link
+
+peach
+
+toad
+
+bowser
+
+https://dev-novella.voicethread.net/myvoice/thread/21456006
+
+Seems like the org_usage_b is only tracking one person.
+
+CALLS FOR MOCKING (FROM PROD):
+org_video_comment_b: https://voicethread.com/api/rest/report/get/org_video_comment_b?full=1&beginDate=2023-08-21&endDate=2024-08-21&xUnits=days&orgId=240150&userId=&aggregate=&id=org_video_comment_b
+org_audio_comment_b: https://voicethread.com/api/rest/report/get/org_audio_comment_b?full=1&beginDate=2023-08-21&endDate=2024-08-21&xUnits=days&orgId=240150&userId=&aggregate=&id=org_audio_comment_b
+org_text_comment_b:  https://voicethread.com/api/rest/report/get/org_text_comment_b?full=1&beginDate=2023-08-21&endDate=2024-08-21&xUnits=days&orgId=240150&userId=&aggregate=&id=org_text_comment_b
+         https://dev-novella.voicethread.net/api/rest/report/get/org_text_comment_b?beginDate=2024-07-21&endDate=2024-08-21&xUnits=days&orgId=25823891&userId=&aggregate=&id=org_text_comment_b&apiVersion=2024.01.16
+
+
+Questions about the endpoints:
+- How are user minutes calculated?
+- Why don't I see any slides created?
