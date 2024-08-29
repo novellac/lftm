@@ -1,5 +1,817 @@
-Goals
--
+<template>
+  <div
+    class="flex flex-col w-full h-full overflow-hidden dark"
+    data-test="player"
+  >
+    <Loading
+      v-if="contentLoading"
+      class="fixed z-20 flex items-center justify-center w-full"
+    />
 
-Notes
--
+    <template v-if="!contentLoading && (threadIsError || showSignInModal)">
+      <SignInOrRegisterDialog
+        v-if="!isAuthenticated || showSignInModal"
+        :show-close-button="isAuthenticated || unauthedUserIsAttemptingReport"
+        @close="handleSignInClosed"
+      />
+
+      <PermissionsDialog
+        v-if="isAuthenticated"
+        :thread-id="threadId"
+        @cancel="goHome"
+        @accessRequested="goHome"
+      />
+    </template>
+
+    <template v-if="thread && !threadIsLoading">
+      <PlayerNav
+        v-if="useWebComponentPlayer || forcePlayerNav"
+        ref="playerNav"
+        scrollable-menu
+        :hide-nav-bar-share-button="hideNavBarShareButton"
+        data-test="playerNav"
+        :user="user"
+        :identities="identities"
+        :thread="thread"
+        :pages="pagesWithMessages"
+        :current-page-id="location.pageId"
+        :loading="anyLoading"
+        :header-level="2"
+        :can-subscribe="canSubscribe"
+        :is-subscribed="isSubscribed"
+        :is-authed="isAuthenticated"
+        :nav-menu-items="menuItems"
+        :override-identities-link="overrideIdentitiesLink"
+        :share-access-schema="shareAccessSchema"
+        @subscribe:thread="subscribe"
+        @unsubscribe:thread="unsubscribe"
+        @edit:thread="$emit('edit:thread', thread)"
+        @click:settings="modals.settings = true"
+        @click:avatar="modals.identities = true"
+        @click:details="modals.details = true"
+        @click:report="handleReportRequest"
+        @click:clone="modals.clone = true"
+        @click:language="modals.language = true"
+        @click:share="handleShareAction"
+      >
+        <template #beforeTitle>
+          <slot name="playerNavBack" />
+        </template>
+
+        <template #afterTitle>
+          <slot name="afterNavTitle" />
+        </template>
+      </PlayerNav>
+
+      <div class="relative w-full h-full min-h-48">
+        <component
+          :is="useWebComponentPlayer ? CompatWebComponentPlayer : StandardPlayer"
+          v-bind="{
+            ...$props,
+            ...$attrs,
+            'data-test': 'vtPlayer',
+            threadId: location.threadId,
+            pageId: location.pageId,
+            commentId: location.commentId,
+            gallery: showGalleryView,
+            onManageCaptions: onEditCaptions,
+            onShowOverview: toggleGalleryView,
+            onLocationChange: updateLocation,
+            onRecordingChange: updateRecordingStatus,
+            onRecordingStopped: handleStopRecording,
+            onSignin: handleSignIn,
+            onUpdateGallery: updateGalleryView,
+            onEditPage: requestPageEdit,
+            onDeletePage: requestPageDelete,
+            onWatched: (e: PageOrCommentEventParams) => emit('watched', e),
+            data: playerData,
+            disabled: hasOpenModals || null,
+            unified: thread?.options?.unifiedConversation,
+            lang: preferredLanguageId,
+            hidePlayerHeader: forcePlayerNav,
+            'onAdd:captions': ($event: PageOrCommentEventParams) => onAddCaptions({ itemId: $event.id, isComment: $event.type === 'comment' }),
+            'onEdit:captions': ($event: PageOrCommentIdObject) => { onEditCaptions($event) }
+          }"
+          ref="player"
+          class="z-0"
+        />
+      </div>
+
+      <Transition name="height">
+        <!-- We v-show the MTE here so that we can use its edit and delete capabilities even when gallery view is closed -->
+        <MinimalThreadEditor
+          v-show="showGalleryView"
+          :thread="thread || {}"
+          class="vt-border-standard-primary vt-bg-standard-tertiary relative z-10 flex w-full player-desktop:h-48 overflow-hidden transition-all duration-200 shrink-0 dark:border-t-2"
+          data-test="threadEditor"
+          @closed:recorder="reattachPlayer"
+          @page:deleted="($event) => onPageDeleted($event)"
+        >
+          <template #body="{ reorderPages }">
+            <BaseHeader level="2" class="vt-sr-only">
+              {{ translate('hybridPlayer.views.gallery') }}
+            </BaseHeader>
+
+            <GalleryView
+              ref="subview"
+              data-test="subview"
+              tabindex="-1"
+              :pages="pagesWithMessages"
+              :current-page-id="location.pageId"
+              :thread="thread"
+              :open="showGalleryView"
+              :identities="identities"
+              :can-add-slides="canAddSlides"
+              :class="{'mr-24': canAddSlides}"
+              class="w-screen mx-4 overflow-hidden"
+              @reorder="reorderPages"
+              @update:page="updateCurrentPage"
+            />
+            <div
+              v-if="canAddSlides"
+              class="absolute right-0 h-full text-center"
+              data-test="galleryActionButtonsWrapper"
+            >
+              <div class="flex player-desktop:flex-col items-center justify-center player-desktop:gap-2 player-desktop:mt-6 h-full">
+                <BaseButtonGlobal
+                  data-test="galleryEditThreadButton"
+                  class="w-11 h-11"
+                  variant="standard"
+                  scheme="tertiary"
+                  icon="fas fa-pencil"
+                  :icon-size-class="['text-sm','player-desktop:text-lg']"
+                  :aria-label="translate('actions.editThread')"
+                  @click="$emit('edit:thread', thread)"
+                />
+                <BaseButtonGlobal
+                  data-test="galleryEditSettingsButton"
+                  class="w-11 h-11"
+                  variant="standard"
+                  scheme="tertiary"
+                  icon="fas fa-cog"
+                  :icon-size-class="['text-sm','player-desktop:text-lg']"
+                  :aria-label="translate('actions.openSettings')"
+                  @click="modals.settings = true"
+                />
+              </div>
+            </div>
+          </template>
+        </MinimalThreadEditor>
+      </Transition>
+    </template>
+
+    <ExpandedMediaView
+      v-if="expandedMedia.show && !expandedMediaLoading"
+      :item="captionItem.item!"
+      :is-comment="captionItem.isComment!"
+      :thread="thread!"
+      :identities="identities"
+      :captions-list="captionsList"
+      :focus-trap-options="focusTrapOptions"
+      :comment-author-name="captionItem.authorName"
+      :captions-updating="captionsUpdating"
+      @add="onAddCaptions"
+      @closed="expandedMedia.show = false"
+      @save:captions="updateCaptionFile"
+      @delete:captions="deleteCaptionFile"
+    />
+
+    <OrderCaptionsDialog
+      v-if="orderCaptions.show"
+      :is-comment="captionItem.isComment"
+      :caption-jobs="captionJobs"
+      :caption-sources="captionSources"
+      :loading="orderCaptions.loading"
+      :trap-options="focusTrapOptions"
+      @order="submitCaptionJob"
+      @upload="saveCaptionFile"
+      @closed="closeOrderCaptionsDialog"
+    />
+
+    <IdentityManagementDialog
+      v-if="modals.identities"
+      :initial-identity-id="user!.currentIdentityId!"
+      :user-id="user?.id"
+      :loading="anyLoading"
+      :identities="identities"
+      :override-link="overrideIdentitiesLink"
+      @update:currentIdentityId="updateCurrentIdentity($event)"
+      @close="modals.identities = false"
+    />
+
+    <ThreadDetailsDialog
+      v-if="modals.details"
+      :thread="thread!"
+      @close="closeThreadDetailsDialog"
+    />
+
+    <ThreadSettingsDialog
+      v-if="modals.settings"
+      :thread="thread!"
+      @saved="handleSettingsSaved"
+      @cancel="closeThreadSettingsDialog"
+      @closed="closeThreadSettingsDialog"
+    />
+
+    <ReportContentDialog
+      v-if="modals.report"
+      :thread-title="threadTitle"
+      :page-title="pageTitle"
+      :page-number="pageNumber"
+      :loading="anyLoading"
+      @close="closeReportContentDialog"
+      @submit:report="reportContent"
+    />
+
+    <ThreadCloneDialog
+      v-if="modals.clone"
+      :source-thread="thread!"
+      @saved="onThreadCloned"
+      @cancel="closeThreadCloneDialog"
+      @closed="closeThreadCloneDialog"
+    />
+
+    <ThreadCloneSuccessDialog
+      v-if="modals.cloneSuccess"
+      :hide-go-to-copy-button="hideGoToCopyButton"
+      @close="closeCloneWorkflow"
+      @view:copy="onViewClone"
+    />
+
+    <LanguageChangeDialog
+      v-if="modals.language"
+      :preferred-language="preferredLanguageId"
+      :loading="anyLoading"
+      @close="closeLanguageChangeDialog"
+      @save:language="handlePreferredLanguageChange"
+    />
+
+    <ShareVTDialog
+      v-if="modals.share"
+      :thread="thread!"
+      :is-author="isThreadAuthor"
+      :current-view="shareTab"
+      :access-schema="shareAccessSchema"
+      :permissions-options="threadPermissionsOptions()"
+      @closed="closeShareModal"
+      @update:thread="invalidateThreadQuery"
+    />
+    <A11yAnnouncer ref="announcer" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, provide, inject, watch, reactive, toRefs, nextTick, Ref, PropType } from 'vue'
+import { useRouter } from 'vue-router'
+import { watchOnce } from '@vueuse/core'
+
+import StandardPlayer from '@shared/components/player/StandardPlayer.vue'
+import CompatWebComponentPlayer from '@shared/components/player/CompatWebComponentPlayer.vue'
+import ExpandedMediaView from '@shared/components/views/ExpandedMediaView.vue'
+import PlayerNav from '@shared/components/player/HybridPlayer/PlayerNav.vue'
+import GalleryView from '@shared/components/player/HybridPlayer/GalleryView.vue'
+import MinimalThreadEditor from '@shared/components/tools/ThreadEditor/MinimalThreadEditor.vue'
+import A11yAnnouncer from '@shared/components/tools/A11yAnnouncer.vue'
+
+import IdentityManagementDialog from '@shared/components/views/IdentityManagement/IdentityManagementDialog.vue'
+import LanguageChangeDialog from '@shared/components/dialogs/LanguageChangeDialog.vue'
+import OrderCaptionsDialog from '@shared/components/views/ExpandedMediaView/OrderCaptionsDialog.vue'
+import PermissionsDialog from '@shared/components/dialogs/PermissionsDialog.vue'
+import ReportContentDialog from '@shared/components/dialogs/ReportContentDialog.vue'
+import ShareVTDialog from '@shared/components/dialogs/ShareVTDialog.vue'
+import SignInOrRegisterDialog from '@shared/components/dialogs/SignInOrRegisterDialog.vue'
+import ThreadCloneDialog from '@shared/components/dialogs/ThreadCloneDialog.vue'
+import ThreadCloneSuccessDialog from '@shared/components/dialogs/ThreadCloneSuccessDialog.vue'
+import ThreadDetailsDialog from '@shared/components/dialogs/ThreadDetailsDialog.vue'
+import ThreadSettingsDialog from '@shared/components/dialogs/ThreadSettingsDialog.vue'
+
+import { handleAxiosError } from '@shared/libraries/errors/Utils'
+import { notify } from '@kyvg/vue3-notification'
+import { translate } from '@shared/plugins/i18n'
+import { defaultSingleThreadParams } from '@shared/libraries/thread/Utils'
+import { flagContent } from '@shared/libraries/User'
+import { pagesWithNewMessages } from '@shared/libraries/page/Utils'
+import { markThreadAsViewed } from '@shared/libraries/Thread'
+
+import type { Thread, Page, ThreadComment, AnyPage, PageOrCommentEventParams, PageOrCommentIdObject } from '@shared/types'
+
+import Env from '@shared/libraries/Env'
+
+import { PROVIDE_RECORDER_OPEN, FEATURE_MYVOICE4, PROVIDE_TE_PAGE_TO_EDIT, PROVIDE_TE_PAGE_TO_DELETE, PROVIDE_ASSIGNMENTS_AUTH_PARAMS, SHAREVT_SHARE } from '@shared/libraries/Constants'
+
+import SetupPlayerUserInfo from '@shared/components/player/HybridPlayer/SetupPlayerUserInfo'
+import SetupPlayerCaptions from '@shared/components/player/HybridPlayer/SetupPlayerCaptions'
+import SetupPlayerSubview from '@shared/components/player/HybridPlayer/SetupPlayerSubview'
+import SetupThreadSubscription from '@shared/features/SetupThreadSubscription'
+
+import SetupLanguagesQuery from '@shared/queries/SetupLanguagesQuery'
+import SetupPlayerShare from '@shared/components/player/HybridPlayer/SetupPlayerShare'
+import SetupMessagesQuery from '@shared/queries/SetupMessagesQuery'
+import SetupVueQueryErrorToast from '@shared/features/SetupVueQueryErrorToast'
+import SetupFeatureQuery from '@shared/queries/SetupFeatureQuery'
+import SetupModalManagement from '@shared/features/SetupModalManagement'
+import SetupThread from '@shared/features/SetupThread'
+import SetupThreadQuery from '@shared/queries/SetupThreadQuery'
+import SetupThreadPagesQuery from '@shared/queries/SetupThreadPagesQuery'
+
+import { idsAreEqual, titleOrUntitled } from '@shared/libraries/BaseApi'
+
+const props = defineProps({
+  menuItems: { type: Array as PropType<string[]>, default: undefined },
+  threadId: { type: Number, required: true },
+  pageId: { type: Number, default: null },
+  commentId: { type: Number, default: null },
+  taskId: { type: Number, default: null },
+  gradebookId: { type: Number, default: null },
+  overrideIdentitiesLink: {
+    type: Object,
+    default: null
+  },
+  forceDisallowPublishing: {
+    type: Boolean,
+    default: false
+  },
+  hideGoToCopyButton: {
+    type: Boolean,
+    default: false
+  },
+  hideNavBarShareButton: {
+    type: Boolean,
+    default: false
+  },
+  forcePlayerNav: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['updated:pages', 'edit:thread', 'view:clone', 'update:location', 'updated:thread', 'watched', 'signin'])
+
+type PlayerRef = Ref<InstanceType<typeof CompatWebComponentPlayer> | InstanceType<typeof StandardPlayer> | null>
+const player: PlayerRef = ref(null)
+
+const { threadId } = toRefs(props)
+
+const assignmentsAuthParams = inject(PROVIDE_ASSIGNMENTS_AUTH_PARAMS, ref({}))
+
+const { data: thread, isLoading: threadIsLoading, invalidate: invalidateThreadQuery, isError: threadIsError } = SetupThreadQuery({
+  id: threadId,
+  params: { ...assignmentsAuthParams.value, ...defaultSingleThreadParams }
+})
+
+const call = (fn: string) => {
+  if (!player.value) return
+
+  if (typeof player.value[fn] === 'function') player.value[fn]()
+
+  else if (Env.DEV) {
+    // eslint-disable-next-line no-console
+    console.warn(`player has no method "${fn}"`)
+  }
+}
+
+const {
+  user,
+  identities,
+  updateCurrentIdentity,
+  updatePreferredLanguage,
+  anyLoading,
+  isAuthenticated
+} = SetupPlayerUserInfo()
+
+const { canAddSlides, title: threadTitle } = SetupThread({ threads: thread })
+
+const { hasOpenModals } = SetupModalManagement({ skipAddingSelf: true })
+
+const reattachPlayer = () => {
+  // The reattach fn only applies to the legacy standard player
+  if (useWebComponentPlayer.value) return
+  if (!player.value) return
+
+  player.value.reattachPlayer()
+}
+
+const {
+  subscribe,
+  unsubscribe,
+  canSubscribe,
+  isSubscribed
+} = SetupThreadSubscription({
+  thread,
+  identities,
+  invalidateThreadQuery
+})
+
+const {
+  captionSources,
+  captionJobs,
+  captionsList,
+  captionItem,
+  expandedMedia,
+  expandedMediaLoading,
+  orderCaptions,
+  focusTrapOptions,
+  onAddCaptions,
+  closeOrderCaptionsDialog,
+  closeModals,
+  captionsUpdating,
+  getCaptionSources,
+  onEditCaptions,
+  submitCaptionJob,
+  saveCaptionFile,
+  updateCaptionFile,
+  deleteCaptionFile
+} = SetupPlayerCaptions({ assignmentsAuthParams })
+
+const modals = reactive({
+  identities: false,
+  details: false,
+  settings: false,
+  report: false,
+  clone: false,
+  cloneSuccess: false,
+  language: false,
+  share: false
+})
+
+const contentLoading = computed(() => {
+  return threadIsLoading.value || expandedMediaLoading.value
+})
+
+const { data: messages, error: messagesError } = SetupMessagesQuery({ enabled: isAuthenticated, params: { actedOn: 0 } })
+
+interface Location {
+  threadId: Thread['id']
+  pageId?: Page['id']
+  commentId?: ThreadComment['id']
+}
+
+const location: Location = reactive({
+  threadId: props.threadId,
+  pageId: props.pageId,
+  commentId: props.commentId
+})
+
+const updateLocation = ({ threadId, pageId, commentId }: Partial<Location>) => {
+  if (threadId) location.threadId = threadId
+  if (pageId) location.pageId = pageId
+  if (commentId) location.commentId = commentId
+}
+
+watch(() => props.threadId, threadId => {
+  updateLocation({ threadId })
+})
+
+watch(() => props.pageId, pageId => {
+  updateLocation({ pageId })
+})
+
+watch(() => props.commentId, commentId => {
+  updateLocation({ commentId })
+})
+
+const {
+  data: pages,
+  error: threadPagesError
+} = SetupThreadPagesQuery({
+  threadId,
+  callParams: assignmentsAuthParams,
+  enabled: computed(() => !threadIsLoading.value && !threadIsError.value)
+})
+
+const pagesWithMessages = computed(() => {
+  if (!pages.value?.length) return []
+
+  return pagesWithNewMessages(pages.value, messages.value)
+})
+
+SetupVueQueryErrorToast([messagesError, threadPagesError])
+
+const announcer: Ref<InstanceType<typeof A11yAnnouncer> | null> = ref(null)
+
+const announcePageNowPlaying = (pageId: number) => {
+  if (!announcer.value) return
+  if (!pages.value) return
+
+  const pageIndex = pages.value.findIndex(p => p.id.toString() === pageId.toString())
+  const page = pages.value[pageIndex]
+
+  if (!page) return
+
+  announcer.value.announce(translate('hybridPlayer.messages.nowPlaying', {
+    order: pageIndex + 1,
+    total: pages.value.length,
+    title: titleOrUntitled(page.title)
+  }))
+}
+
+watch(location, location => {
+  emit('update:location', location)
+})
+
+watch(() => location.pageId, (newId, oldId) => {
+  if (!newId) return
+  if (idsAreEqual(newId, oldId)) return
+
+  announcePageNowPlaying(newId)
+
+  // If we were showing caption modals for the previous page, close them
+  closeModals()
+})
+
+watch(pages, (newPages, oldPages) => {
+  // If we're on the legacy player, force a page reload
+  if (player.value && typeof player.value.syncLocation === 'function') player.value.syncLocation()
+
+  // If we were previously showing a different set of pages, emit so the parent can handle the event as needed
+  // Example: the StudentPlayer refetches the definition when pages are updated
+  if (oldPages) emit('updated:pages')
+})
+
+const pageToEdit: Ref<AnyPage | null> = ref(null)
+const pageToDelete: Ref<AnyPage | null> = ref(null)
+provide(PROVIDE_TE_PAGE_TO_EDIT, pageToEdit)
+provide(PROVIDE_TE_PAGE_TO_DELETE, pageToDelete)
+
+const requestPageEdit = ({ id }: { id: Page['id']}) => {
+  if (!pages.value) return
+
+  const page = pages.value.find(page => idsAreEqual(page.id, id))
+
+  if (page) pageToEdit.value = page
+}
+
+const requestPageDelete = ({ id }: { id: Page['id']}) => {
+  if (!pages.value) return
+
+  const page = pages.value.find(page => idsAreEqual(page.id, id))
+  if (page) pageToDelete.value = page
+}
+
+const {
+  subview,
+  showGalleryView,
+  toggleGalleryView,
+  updateGalleryView,
+  focusOnSubview,
+  updateRecordingStatus,
+  recorderIsOpen
+} = SetupPlayerSubview()
+
+const playerData = computed(() => {
+  return JSON.stringify({
+    messages: messages.value,
+    pages: pages.value,
+    thread: thread.value
+  })
+})
+
+/**
+ * Update the Legacy Player's location
+ * @param {Number} pageId
+ *
+ * @deprecated
+ */
+const legacyUpdateLocation = (pageId: Page['id']) => {
+  if (player.value) player.value.changeLocation({ pageId })
+}
+
+const updateCurrentPage = (pageId: Page['id']) => {
+  // The web component player is reactive, so we can just set the pageId from here and the vtplayer will update.
+  // For the standard player, we update the vtplayer's pageId with a ref method and then react to its locationChange event.
+  useWebComponentPlayer.value
+    ? updateLocation({ pageId })
+    : legacyUpdateLocation(pageId)
+}
+
+const onPageDeleted = ({ page, index }: { page: Page, index: number}) => {
+  // if we've deleted all the pages, there's nowhere to go from here
+  if (!pages.value?.length) return
+
+  // if we were viewing the deleted page, navigate to a page that still exists
+  if (location.pageId === page.id) {
+    const nextPageId = index === 0 ? pages.value[0].id : pages.value[index - 1].id
+
+    updateCurrentPage(nextPageId as Page['id'])
+  }
+
+  focusOnSubview()
+}
+
+/**
+ * key: PROVIDE_RECORDER_OPEN
+ *
+ * description:
+ * Alerts children of the recorder availability
+ */
+provide(PROVIDE_RECORDER_OPEN, recorderIsOpen)
+// Load the data needed to show the player and its subcomponents
+const loadPlayerData = async () => {
+  try {
+    if (isAuthenticated.value) await getCaptionSources()
+  } catch (e) {
+    handleAxiosError(e)
+  }
+}
+
+const reportContent = async (textToReport: string) => {
+  try {
+    if (!thread.value?.id) return
+    if (!location.pageId) return
+
+    await flagContent({
+      message: textToReport,
+      threadId: thread.value.id,
+      pageId: location.pageId
+    })
+
+    notify({
+      title: translate('labels.success'),
+      text: translate('messages.reportContentSuccess'),
+      type: 'success'
+    })
+  } catch (e) {
+    handleAxiosError(e)
+  } finally {
+    closeReportContentDialog()
+  }
+}
+
+const { isActive: enableMV4 } = SetupFeatureQuery({ feature: FEATURE_MYVOICE4 })
+
+const useWebComponentPlayer = computed(() => {
+  return enableMV4.value
+})
+
+loadPlayerData()
+
+defineExpose({
+  call,
+  reattachPlayer
+})
+
+const playerNav: Ref<InstanceType<typeof PlayerNav> | null> = ref(null)
+
+const focusPlayerNavKebab = () => {
+  if (!playerNav.value) return
+  playerNav?.value.focusKebabMenu()
+}
+
+const closeThreadDetailsDialog = async () => {
+  modals.details = false
+
+  await nextTick()
+  focusPlayerNavKebab()
+}
+
+const handleSettingsSaved = () => {
+  invalidateThreadQuery()
+
+  closeThreadSettingsDialog()
+}
+const closeThreadSettingsDialog = async () => {
+  modals.settings = false
+
+  await nextTick()
+  focusPlayerNavKebab()
+}
+
+const unauthedUserIsAttemptingReport = ref(false)
+
+const handleReportRequest = () => {
+  if (!isAuthenticated.value) {
+    showSignInModal.value = true
+    unauthedUserIsAttemptingReport.value = true
+    return
+  }
+
+  modals.report = true
+}
+
+const handleSignInClosed = () => {
+  showSignInModal.value = false
+
+  if (!unauthedUserIsAttemptingReport.value) return
+
+  if (isAuthenticated.value) modals.report = true
+  unauthedUserIsAttemptingReport.value = false
+}
+
+const closeReportContentDialog = async () => {
+  modals.report = false
+
+  await nextTick()
+  focusPlayerNavKebab()
+}
+
+const pageTitle = computed(() => {
+  const currentPageTitle = pages.value?.find(page => page.id === location.pageId)?.title
+
+  return titleOrUntitled(currentPageTitle)
+})
+
+const pageNumber = computed(() => {
+  if (!pages.value) return -1
+
+  return pages.value.findIndex(el => el.id === location.pageId) + 1
+})
+
+const closeThreadCloneDialog = async () => {
+  modals.clone = false
+
+  await nextTick()
+  focusPlayerNavKebab()
+}
+
+const closeCloneWorkflow = async () => {
+  modals.cloneSuccess = false
+
+  closeThreadCloneDialog()
+}
+
+const clonedThread = ref({})
+const onThreadCloned = (threadClone: Thread) => {
+  modals.cloneSuccess = true
+
+  clonedThread.value = threadClone
+}
+
+const onViewClone = () => {
+  emit('view:clone', clonedThread.value)
+
+  closeCloneWorkflow()
+}
+
+const { preferredLanguageId } = SetupLanguagesQuery()
+
+const closeLanguageChangeDialog = async () => {
+  modals.language = false
+
+  await nextTick()
+  focusPlayerNavKebab()
+}
+
+const handlePreferredLanguageChange = async (lang: string) => {
+  await updatePreferredLanguage(lang)
+
+  closeLanguageChangeDialog()
+}
+
+const { forceDisallowPublishing } = toRefs(props)
+
+const {
+  isThreadAuthor,
+  shareAccessSchema,
+  threadPermissionsOptions
+} = SetupPlayerShare({
+  thread,
+  identities,
+  user,
+  isAuthed: isAuthenticated,
+  navMenuItems: computed(() => props.menuItems || []),
+  forceDisallowPublishing
+})
+
+const shareTab = ref(SHAREVT_SHARE)
+
+const handleShareAction = (tab: string) => {
+  if (tab) shareTab.value = tab
+
+  modals.share = true
+}
+
+const closeShareModal = async () => {
+  modals.share = false
+
+  await nextTick()
+  focusPlayerNavKebab()
+}
+
+const router = useRouter()
+
+const goHome = () => { router.push('/') }
+
+const handleStopRecording = () => {
+  updateGalleryView(false)
+}
+
+const showSignInModal = ref(false)
+const handleSignIn = () => {
+  // Show signin modal if mv4 is off because the user is seeing the legacy player
+  if (!enableMV4.value) {
+    showSignInModal.value = true
+    return
+  }
+
+  // Otherwise keep passing the event up
+  emit('signin')
+}
+
+const readyToMarkAsViewed = computed(() => {
+  return useWebComponentPlayer.value && thread?.value && !threadIsLoading.value
+})
+
+watchOnce(readyToMarkAsViewed, () => {
+  markThreadAsViewed(props.threadId)
+})
+</script>
