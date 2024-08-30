@@ -3,6 +3,8 @@ Questions:
 
 org id: 25823891 (240150 on prod)
 
+Page in manager: https://localhost.voicethread.net:3000/25823891/analytics
+
 https://dev-novella.voicethread.net/login/join/org/25823891/promoted/34bc07e16 instructor link
 
 luigi
@@ -33,7 +35,8 @@ Questions about the endpoints:
 - Why don't I see any slides created? (the db doesn't have any data bc the dev BE doesn't support it - running cron did not work)
 
 Plan
-- Make a page in manager
-- Use the orgId from the route (there is an example for this /managerV2/<org id>/reports/accounts/inactive)
-- If on dev, use the mock data toggle 
+- ✅ Make a page in manager
+- ✅ Use the orgId from the route (there is an example for this /managerV2/<org id>/reports/accounts/inactive)
+- ✅ If on dev, use the mock data toggle 
 - Ideally have one component you can feed report ids, right? Maybe not, since you need different kinds of labels, title, and subtitles.
+- OOF - I think my `SetupHCChart` file is right now very tied to the PIE chart. I need to tease out what stuff in there is unique to the pie and what's useful for other things, or if I just need to have separate files for each.
