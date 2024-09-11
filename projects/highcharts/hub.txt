@@ -40,3 +40,7 @@ Plan
 - ✅ If on dev, use the mock data toggle 
 - Ideally have one component you can feed report ids, right? Maybe not, since you need different kinds of labels, title, and subtitles.
 - OOF - I think my `SetupHCChart` file is right now very tied to the PIE chart. I need to tease out what stuff in there is unique to the pie and what's useful for other things, or if I just need to have separate files for each.
+- In chartWrapper check if there is a title prop populated and if not, then use the total of as the title?
+
+Helpful notes for other devs
+- The CSS classes in ChartWrapper provide some basic styling (most importantly min and max widths). I think it's worth it to leave them.
