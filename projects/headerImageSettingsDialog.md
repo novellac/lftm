@@ -1,3 +1,7 @@
+## Resources
+
+Good image from web: https://i5.walmartimages.com/asr/a598aa21-7898-4b16-b28f-3b488ef34623.93fa89a8b486f230159d361027e916cd.jpeg
+
 ## Stuff to rip out for the settings deprecation
 hideHeaderImageText
 thumbnailURL
