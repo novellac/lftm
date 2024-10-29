@@ -8,6 +8,8 @@ Trello card:
 
 ## Resources
 - Example of a table I found on a11ySlack: https://umnlibraries.github.io/design-system/code/form.html#matrix
+- Figma: https://www.figma.com/design/pF3umQF3avthwSyNnY3E5k/Grading-feature-2024---Rubrics?node-id=1054-31350&node-type=canvas&t=Pi4x2E34NVWQPBp0-0
+- https://adrianroselli.com/2019/05/uniquely-labeling-fields-in-a-table.html
 
 ## Outstanding issues/questions
 
