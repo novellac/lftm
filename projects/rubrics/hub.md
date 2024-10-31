@@ -27,6 +27,7 @@ Trello card:
 - RubricIndicator: The inputs both need error logic.
 - RubricIndicator: emit the updated cell contents (and RubricTable needs to handle them!)
 - Either in RubricIndicator or RubricTable (maybe rubricTable), need to validate the points of the first column to make sure they add up to the max points.
+- The BaseTextArea doesn't have the same margins as the BaseInput, but it probably should. This is out of scope for this PR chain, but should be wrangled in a more holistic way (i.e. go fix the other components that use BaseTextArea and make it so that BaseInput and BaseTextArea have the same margins).
 
 ## Random code snippets
 
