@@ -20,7 +20,7 @@ Last edit 2025.01.20
 - I then made the storybook story work for what I'll need (at least for the View mode) for a final RubricTable.
 
 ## What I need to do next
-- I now need to build back in the add and remove rows and cols functionality. I can pass the add and remove functions to the users via scoped slots.
+-DONE I now need to build back in the add and remove rows and cols functionality. I can pass the add and remove functions to the users via scoped slots.
 - I will then need to create something like RubricTable which uses TableWithRemovableRowsAndCols.
 - When I create this RubricTable, I will handle things like selecting there in RubricTable, and not in the TableWithRemovableRowsAndCols component.
 - I will then make a Setup file to massage BE API data into the format I need (the format I need can be seen in the mockAlreadyFormattedRubric in mockRubricWithPoints)
