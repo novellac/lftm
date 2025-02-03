@@ -35,3 +35,7 @@ Trello card:
         const firstRowFirstChild = wrapper.findAll('tr')[0].element.children[0]
         expect(firstRowFirstChild.children[0].tagName).toBe('RUBRIC-CRITERION-STUB')
 ```
+
+"columnDeleted": "Column deleted",
+    "columnDeleteConfirmation": "Are you sure you want to delete this column from your rubric? This cannot be undone.",
+   
