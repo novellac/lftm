@@ -26,7 +26,7 @@ He kept repeating that he wanted to "to collaborate, to hash things out, like ca
 
 ## To Megan
 
-I'd like to share something with you that happened at work. I'm sharing it here because I do not feel safe sharing at work. If you don't think you can read this without sharing it with people at VT, then please stop reading. I will not be offended - I understand and respect the desire to protect oneself through not engaging.
+I'd like to share something with you that happened at work with Adam. I'm sharing it here because I'm not sure I feel safe sharing at work. If you don't think you can read this without sharing it with people at VT, then please stop reading. I will not be offended - I understand and respect the desire to protect oneself through not engaging.
 
 ----
 
