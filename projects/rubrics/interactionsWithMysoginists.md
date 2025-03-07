@@ -79,3 +79,9 @@ I made a small request but received a far outsized response. Happy that my small
 I do not expect you to do anything about this, or support me in objecting to his behavior. I am telling you so that if you are called in to take over the project (and that won't be my choice), you'll know why. Although I believe you have far more political power at work, I believe you have just as much to lose as I do, and I don't expect you to put yourself at risk by objecting to his behavior. Frankly, I'm not even sure I'll tell CN. I care about having an income and healthcare, and I also care deeply about the students and teachers we serve.
 
 I'm sharing this with you so that if you're called to take over the Rubric project (and that won't be my choice - you know how committed I am to working on it and other kind of the adventurous projects!), or if I get pulled off further projects that require BE support, you'll know why.
+
+## Potential response to Voicethread
+
+As a point of clarification, my request was to return a couple of extra keys (the types and points) from the Rubric API. I'm working on implementing what's in the Figma based on previous conversations with product and design.
+
+That said, I don't have any particular opinions on changes to the product or design, but it sounds like you've raised some good questions here. Thanks for the effort and deep thought. As usual, I'll keep my eye on the VoiceThreads and the Figma and am eager to see where things go!
