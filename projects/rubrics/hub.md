@@ -39,3 +39,49 @@ Trello card:
 "columnDeleted": "Column deleted",
     "columnDeleteConfirmation": "Are you sure you want to delete this column from your rubric? This cannot be undone.",
    
+
+## Discussion with MH about responding to VoiceThread comments on 2025.03.17
+Ref: https://voicethread.com/myvoice/thread/28508370/170428594/151284325
+
+1. What does a rubric belong to? Course, org, user, assignment?
+
+2. What would you (personally) expect the API to return when you're accessing the rubric (esp from outside of the wizard)?
+
+3. Are the new screens she shows are part of the wizard? (I REALLY hope not, but if so where is the teal bar, and if not where is this?)
+- MH: Depends on what the rubric is associated with. Shared components with a wizard wrapper maybe. Maybe just saving and loading in the Wizard wrapper. Manifest tells us to go to rubric screen.
+- Suggest it be another step in the Wizard if we need back buttons.
+- If in wizard as an additonal step, then need help drafting a request for the thing we need in manifest.
+
+4. What happens if you go back and choose not to use a rubric?
+- MH the create rubric button is weird. Creating the rubric should be a manifest step.
+
+Manifest can just tell us when to show a rubric creator
+
+this kind of thing == (where there's a button that looks like a button that has a side effect of moving someone to a new page and new context)
+--
+
+An argument for doing it in universal - we definitely do not want a multistep form that is controlled by BE in wizard but not controlled by the BE in Universal, because then everyone would have to write everything twice. 
+
+In universal, we have a rubric creator route, with an assignment id param.
+We open the rubric creator in a new tab when clicking "create rubric" from the wizard.
+Because we know the assignment ID, we can go to the multi-step form.
+The backlink could go to to the wizard/id (they'd still be at their place in the wizard)
+The "save rubric" button text would need to be something more like "save and go back to your place in the wonderful wizard" or whatever.
+
+User VQ so that whenever someone leaves the tab and comes back the assignment gets refetched. (or We may be able to use the "setup open in new tab" composable to re-fetch the created rubric when the user goes back to the wizard.)
+
+What does the save button to?
+- Updates/Stores rubric in the db (so, hits the rubric endpoint)
+- What if someone wants to save and keep working?
+
+### Potential VT comments
+
+What does "back" mean?
+- Save and go back?
+- Does it unassociate the rubric id from the assignment?
+---------
+I want to suggest a small adjustment to the create rubric flow to support usability and accessibility. Currently the user has to wait for the assignment API endpoint to return with the newly attached rubricId before the rubric flow opens in a new tab. We don't know long that will take, especially on public school wifi. Particularly with our LMS products, wizard and student are heavily reviewed for accessibility, and this kind of thing has come up in reports. We're not indicating to the user that the button will navigate them somewhere. An easy fix for this wold be to use a link, but we don't know where the link will go until the BE returns. That might take a while, and could make a user unsure if the program is working or what has happened.
+
+A potential fix for both issues would be if "Create rubric" is a link to universal/rubric/edit/taskId. When the user hits "Save rubric" in the rubric flow, the rubric is saved with the taskId. Moving the point at which we attach a rubricId to the task would allow us to have a clear link to the rubric creator, and a clear save button, solving both the concerns. 
+---------
+Just double-checking, it looks like we're opening in a new tab and the rubric creator is living in Universal. Is that still true? That is FE's strong preference.
