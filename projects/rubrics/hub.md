@@ -85,3 +85,31 @@ I want to suggest a small adjustment to the create rubric flow to support usabil
 A potential fix for both issues would be if "Create rubric" is a link to universal/rubric/edit/taskId. When the user hits "Save rubric" in the rubric flow, the rubric is saved with the taskId. Moving the point at which we attach a rubricId to the task would allow us to have a clear link to the rubric creator, and a clear save button, solving both the concerns. 
 ---------
 Just double-checking, it looks like we're opening in a new tab and the rubric creator is living in Universal. Is that still true? That is FE's strong preference.
+
+## List of rubrics that exist and I can mess with as of 2025.05.02
+List all rubrics
+1. 25609 - funky cold marubric
+2. 25610 - Test Rubric 20250127
+3. 25611 - Test Rubric 20250127
+4. 25612 - Test Rubric 20250127
+5. 25613 - Test Rubric 20250127
+6. 25614 - Test Rubric 20250127
+7. 25615 - Test Rubric 20250127
+8. 25616 - Test Rubric 20250127
+9. 25617 - Test Rubric 20250127
+10. 25618 - Test Rubric 20250127
+11. 25619 - Test Rubric 20250127
+12. 25620 - Test Rubric 20250127
+13. 25621 - Test Rubric 20250127
+14. 25622 - Test Rubric 2025_01_29
+15. 25698 - Funky Stupid Rubric
+
+## List of Tasks with Rubrics attached I can use for examples as of 2025.05.05
+1. 26039 - Assn for Rubric 7 (has rubricId 25621 attached)
+
+### How to attach a rubricId to a task manually
+1. Get an assignment id
+2. Get a rubric ID I know is valid
+3. Send a patch to the task endpoint with the rubric ID in the taskParams (e.g. ` saveTask(params.value?.taskId, { taskParams: params.value?.taskParams }, props.options.do)` from WizardRubricButton.vue)
+
+WEIRD: I REALLY THOUGHT THE ABOVE STEPS GAVE ME AN ATTACHED RUBRIC BUT NOW I CAN'T DO ANOTHER ONE?????
