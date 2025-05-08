@@ -113,3 +113,6 @@ List all rubrics
 3. Send a patch to the task endpoint with the rubric ID in the taskParams (e.g. ` saveTask(params.value?.taskId, { taskParams: params.value?.taskParams }, props.options.do)` from WizardRubricButton.vue)
 
 WEIRD: I REALLY THOUGHT THE ABOVE STEPS GAVE ME AN ATTACHED RUBRIC BUT NOW I CAN'T DO ANOTHER ONE?????
+
+Note for API updates:
+- I don't think we'll need the delete button to be part of the manifest anymore.
