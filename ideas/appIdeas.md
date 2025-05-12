@@ -1,0 +1,5 @@
+# App ideas
+
+## StretchBreak VSCode extension
+
+A VSCode extension that is managed through settings values and interacted with via CLI. It helps you track the number of breaks and stretches you ae doing. You should be able to interact with it via CLI, but that might not be necessary if you're using settings values and don't care about tracking your progress. Ever m minutes it would remind you to take a break and offer you a stretch to do with a link leading to a picture and description of that stretch. When you type something like sbv done ( short for stretchbreakvscode stretched=true) it could maybe save in memory or it could add a line to a document on your computer with the fact that you stretched and when. Then maybe there's a small (small lol) desktop app which you can use to run a couple calculations on the document data and give you some insights about how often and when you stretch. It would be cute if it gave a heatmap a la github.
