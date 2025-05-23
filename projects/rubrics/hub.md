@@ -107,12 +107,41 @@ List all rubrics
 ## List of Tasks with Rubrics attached I can use for examples as of 2025.05.05
 1. 26039 - Assn for Rubric 7 (has rubricId 25621 attached)
 
-### How to attach a rubricId to a task manually
+Task id - Rubric Id
+27551 - 27552
+27549 - 27553
+27547 - 27554
+27546 - 27555
+
+### How to attach a rubricId to a task manually (obsolete)
 1. Get an assignment id
 2. Get a rubric ID I know is valid
 3. Send a patch to the task endpoint with the rubric ID in the taskParams (e.g. ` saveTask(params.value?.taskId, { taskParams: params.value?.taskParams }, props.options.do)` from WizardRubricButton.vue)
 
-WEIRD: I REALLY THOUGHT THE ABOVE STEPS GAVE ME AN ATTACHED RUBRIC BUT NOW I CAN'T DO ANOTHER ONE?????
 
-Note for API updates:
-- I don't think we'll need the delete button to be part of the manifest anymore.
+## Big list of TODOs
+
+- Debounce message when someone is on a rubric (either screen) and tries to navigate away
+- Confirmation message for delete functionality in the Wizard
+- Disallow points inputs on the RubricIndicators when the assessmentType is passfail
+- Figure out how best to test for taskId being able to be a number
+- Hook up Reset button in the RubricEditScreen
+- Hook up the Save progress button in the RubricEditScreen
+- Hook up the SubmitRubric button in the RubricEditScreen
+- Show the unsaved changes message
+- Do alllllllll that validation :sob: and figure out what they want validated :sobsob:
+- parentTypeId: 'taskId', // TODO: Figure out if this key is still in use or called the same on the BE
+- Hook up the Edit pencil button next to the rubric title
+- Handle focus when a user tabs away from a rubric cell popover
+- Make sure that "break-all" is on for ALL table text
+- Make sure that hyphens are on for ALL table text
+- Remove the clear button from the form init screen
+- Give a min-w 80px on all cells
+- Add a step input for rubric indicator of 0.01
+- Make sure the accepted pattern allows for decimals in the rubric indicator
+- Figure out what to do if a user does have a rubric on a task but still navigates to /rubric/edit?taskId=1234 (maybe just push them to the correct route and then run the getOrInit fn again?)
+- Remove the extra label on the Wizard radio buttons
+- See if we can get the `points` (or `maxPoints`) key on the rubric so we don't have to pull it separately all the time
+
+Notes from discussion with Sarah on 2025.05.14:
+- Definitely no horizontal scrolling unless its necessary
