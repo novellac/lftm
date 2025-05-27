@@ -4,7 +4,8 @@ This lightning talk will touch on an age-old web conundrum: Why and when to expl
 ## Intro, Caveats, etc
 
 - Keyboard focus and SR focus aren't the same!
-- When I say keyboard focus, I'm almost always including the visual focus ring, too.
+- Some names for similar stuff: tab focus, keyboard focus, visual focus
+- When I say keyboard focus, I mean the visual indicator (aka focus ring) that emphasizes interactive elements on a webpage.
 - Nothing here is an absolute. It depends! It all depends! Test with your users if you can and if you can't test with users, make things as predictable as possible.
 
 ## Questions I've promised to answer in my talk
@@ -25,6 +26,10 @@ This lightning talk will touch on an age-old web conundrum: Why and when to expl
 ## Takeaways
 
 - You probably benefit from focus handling!
+- Explicitly handling keyboard focus (and just having it in general)
+- The most common cases in which you'll need to explicitly handle focus are when something gets removed from the DOM and when some change of context happens (e.g. a modal opens)
+- Your spidey senses should be on high alert when you're implementing multiple components together and those components may interact.
+- Consistency is key! If most of your features implement something in the same not-ideal way, don't rock the boat, change the shipping industry (sorry I couldn't help myself).
 
 ## Who needs keyboard focus?
 - Just about all of us, at some point or another (give an example of circumstances under which a regular mouse user benefits from having keyboard focus handled - e.g address inputs? or search input with search and clear buttons?)
@@ -66,11 +71,6 @@ I say "might" here, because like most things with FE and a11y, it depends. But h
 - When the interactive elements are in a visual + DOM order.
 - When you know that, after interacting with this feature, the feature will still exist. (I can't stress this enough. If something is going to get delete from the page, make sure you know where focus will go!)
 
-## Resources I can give them
-
-- Relevant WCAG success guidelines
-- Relevant blog posts
-
 ## Paper notes (as-is, mostly focused on Vue):
 
 - When to use $el vs not (item with native focus method?)
@@ -105,3 +105,9 @@ I say "might" here, because like most things with FE and a11y, it depends. But h
 -- Users zoomed in on the screen (the screen gets big, and proper keyboard focus is a good way to not lose your spot)
 -- Users sharing their screen to demo form interactions
 -- It's a long list. You get me.
+
+## Resources
+
+- Relevant WCAG success guidelines
+- Relevant blog posts
+- https://webaim.org/techniques/keyboard/
