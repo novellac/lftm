@@ -130,18 +130,27 @@ Task id - Rubric Id
 - Hook up the SubmitRubric button in the RubricEditScreen
 - Show the unsaved changes message
 - Do alllllllll that validation :sob: and figure out what they want validated :sobsob:
-- parentTypeId: 'taskId', // TODO: Figure out if this key is still in use or called the same on the BE
 - Hook up the Edit pencil button next to the rubric title
 - Handle focus when a user tabs away from a rubric cell popover
 - Make sure that "break-all" is on for ALL table text
 - Make sure that hyphens are on for ALL table text
-- Remove the clear button from the form init screen
 - Give a min-w 80px on all cells
 - Add a step input for rubric indicator of 0.01
 - Make sure the accepted pattern allows for decimals in the rubric indicator
-- Figure out what to do if a user does have a rubric on a task but still navigates to /rubric/edit?taskId=1234 (maybe just push them to the correct route and then run the getOrInit fn again?)
 - Remove the extra label on the Wizard radio buttons
-- See if we can get the `points` (or `maxPoints`) key on the rubric so we don't have to pull it separately all the time
+- Add rubric save to the RubricView (this will save metadata like assessment type)
+- Add back in the SaveCancel footer bar (should be in ideas somewhere)
+- Emit up the updated table data
+- (Pursuant to AA's update to the BE so we can use update/delete in each cell) - format the data with update or delete (oof this is bigger than just one line item)
 
-Notes from discussion with Sarah on 2025.05.14:
+## Big list of TODone's!
+- parentTypeId: 'taskId', // TODO: Figure out if this key is still in use or called the same on the BE - yes still in use
+- Remove the clear button from the form init screen. - done
+- Figure out what to do if a user does have a rubric on a task but still navigates to /rubric/edit?taskId=1234 (maybe just push them to the correct route and then run the getOrInit fn again?) - I have a cast for this now
+- See if we can get the `points` (or `maxPoints`) key on the rubric so we don't have to pull it separately all the time - updated the type and name everywhere
+
+
+
+## Notes from discussion with Sarah on 2025.05.14:
+
 - Definitely no horizontal scrolling unless its necessary

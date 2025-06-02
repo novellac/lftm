@@ -30,6 +30,7 @@ This lightning talk will touch on an age-old web conundrum: Why and when to expl
 - The most common cases in which you'll need to explicitly handle focus are when something gets removed from the DOM and when some change of context happens (e.g. a modal opens)
 - Your spidey senses should be on high alert when you're implementing multiple components together and those components may interact.
 - Consistency is key! If most of your features implement something in the same not-ideal way, don't rock the boat, change the shipping industry (sorry I couldn't help myself).
+- If you're handling focus explicitly, it probably bears documentation and/or testing in some form.
 
 ## Who needs keyboard focus?
 - Just about all of us, at some point or another (give an example of circumstances under which a regular mouse user benefits from having keyboard focus handled - e.g address inputs? or search input with search and clear buttons?)
