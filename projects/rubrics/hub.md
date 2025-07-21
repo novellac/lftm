@@ -125,10 +125,6 @@ Task id - Rubric Id
 - Confirmation message for delete functionality in the Wizard
 - Disallow points inputs on the RubricIndicators when the assessmentType is passfail
 - Figure out how best to test for taskId being able to be a number
-- Hook up Reset button in the RubricEditScreen
-- Hook up the Save progress button in the RubricEditScreen
-- Hook up the SubmitRubric button in the RubricEditScreen
-- Show the unsaved changes message
 - Do alllllllll that validation :sob: and figure out what they want validated :sobsob:
 - Hook up the Edit pencil button next to the rubric title
 - Handle focus when a user tabs away from a rubric cell popover
@@ -137,17 +133,40 @@ Task id - Rubric Id
 - Give a min-w 80px on all cells
 - Add a step input for rubric indicator of 0.01
 - Make sure the accepted pattern allows for decimals in the rubric indicator
-- Remove the extra label on the Wizard radio buttons
-- Add rubric save to the RubricView (this will save metadata like assessment type)
-- Add back in the SaveCancel footer bar (should be in ideas somewhere)
-- Emit up the updated table data
-- (Pursuant to AA's update to the BE so we can use update/delete in each cell) - format the data with update or delete (oof this is bigger than just one line item)
+- RubricHeader cells scrims don't extend to fill height - fix!
+- Replace Submit rubric with Save rubric
+- Figure out why col/row removal isn't being announced to SR (rebase main and try again; MH did some work on announcements recently)
+- Wizard - wrap the "Create rubric" link in an open in new tab button, and send a refresh to the Wizard when tabbing back to the tab, I guess?
+- Check Factories to know if there are still TS errors for Rubrics
+- Check that when you first save the rubric just after creating it, that the assessment type doesn't change.
+- Place focus on the rubric container when the "show rubric" button is clicked.
+- Ask BE if they will please add the `action` property to the stubbed rubrics they create and send when a rubric is first created.
+- Make it so that when you tab out of a popover, you tab to the next cell.
+
+## List of BE Issues
+- BE label in Wizard is not translated (assigned ticket to BE)
+- Remove the extra label on the Wizard radio buttons (asked BE to handle)
+- When the init screen of the rubric is filled out and submitted to task/rubric, the rubric comes back populated with a suggested set of cells, as expected. Can we add `action:update` to those cells? This will allow users to delete a column right away even if they haven't updated it yet. In the FE code, we depend on knowing which header/criteria cells came from the BE, and use the presence of the `action` key to do so.
+- The first time(?) the `task` endpoint gets a PATCH call with `rubricAction: "edit"` it responds with a 500. Subsequent PATCH calls with `rubricAction: "edit"` respond with 200s.
 
 ## Big list of TODone's!
+- Figure out why deleting two rows doesn't delete the two rows it should (e.g. in a table with row0, row1, row2, and row3, deleting row1 and row2 ends up deleting row1 and row3). I used to think this was a BE issue but now actually I think this is an FE issue! My best guess is it's something in the computed property. I think the same thing goes for rows. I'm not sure if the issue is in the computed, actually, or maybe it's in the cells not getting the message that they should change?
+- Patch requests to rubric on subsequent calls after making the initial rubric has assessmentType 0! Should be assessmentType whatever, or maybe we can just leave off the assessmentType from the params? idk, investigate more!
+- Figure out why data doesn't update when you click the submit rubric (save) button
+- Emit up the updated table data
+- Add back in the SaveCancel footer bar (should be in ideas somewhere)
+- Show the unsaved changes message
+- When I send `action:delete` on a criteria, the row does not get deleted.
+- When I send `action:update` on a criteria, the row does not get replaced (still joins)
+- (Pursuant to AA's update to the BE so we can use update/delete in each cell) - format the data with update or delete (oof this is bigger than just one line item) (done but not PR'ed)
+- Add rubric save to the RubricView (this will save metadata like assessment type)
 - parentTypeId: 'taskId', // TODO: Figure out if this key is still in use or called the same on the BE - yes still in use
 - Remove the clear button from the form init screen. - done
 - Figure out what to do if a user does have a rubric on a task but still navigates to /rubric/edit?taskId=1234 (maybe just push them to the correct route and then run the getOrInit fn again?) - I have a cast for this now
 - See if we can get the `points` (or `maxPoints`) key on the rubric so we don't have to pull it separately all the time - updated the type and name everywhere
+- Hook up Reset button in the RubricEditScreen
+- Hook up the Save progress button in the RubricEditScreen
+- Hook up the SubmitRubric button in the RubricEditScreen
 
 
 

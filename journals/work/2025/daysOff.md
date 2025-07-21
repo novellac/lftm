@@ -10,3 +10,9 @@ Friday, June 20
 Saturday, June 21 (weekend)
 Sunday, June 22 (weekend)
 Monday, June 23
+Monday, July 14
+Monday, August 4
+Tuesday, August 5
+Wednesday, August 6
+Thursday, August 7
+Friday, August 8
