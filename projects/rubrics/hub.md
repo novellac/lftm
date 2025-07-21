@@ -121,12 +121,11 @@ Task id - Rubric Id
 
 ## Big list of TODOs
 
-- Debounce message when someone is on a rubric (either screen) and tries to navigate away
+- Debounce message when someone is on the rubric flow (either screen) and tries to navigate away
 - Confirmation message for delete functionality in the Wizard
 - Disallow points inputs on the RubricIndicators when the assessmentType is passfail
 - Figure out how best to test for taskId being able to be a number
 - Do alllllllll that validation :sob: and figure out what they want validated :sobsob:
-- Hook up the Edit pencil button next to the rubric title
 - Handle focus when a user tabs away from a rubric cell popover
 - Make sure that "break-all" is on for ALL table text
 - Make sure that hyphens are on for ALL table text
@@ -134,22 +133,23 @@ Task id - Rubric Id
 - Add a step input for rubric indicator of 0.01
 - Make sure the accepted pattern allows for decimals in the rubric indicator
 - RubricHeader cells scrims don't extend to fill height - fix!
-- Replace Submit rubric with Save rubric
 - Figure out why col/row removal isn't being announced to SR (rebase main and try again; MH did some work on announcements recently)
-- Wizard - wrap the "Create rubric" link in an open in new tab button, and send a refresh to the Wizard when tabbing back to the tab, I guess?
 - Check Factories to know if there are still TS errors for Rubrics
-- Check that when you first save the rubric just after creating it, that the assessment type doesn't change.
 - Place focus on the rubric container when the "show rubric" button is clicked.
-- Ask BE if they will please add the `action` property to the stubbed rubrics they create and send when a rubric is first created.
 - Make it so that when you tab out of a popover, you tab to the next cell.
 
 ## List of BE Issues
-- BE label in Wizard is not translated (assigned ticket to BE)
-- Remove the extra label on the Wizard radio buttons (asked BE to handle)
-- When the init screen of the rubric is filled out and submitted to task/rubric, the rubric comes back populated with a suggested set of cells, as expected. Can we add `action:update` to those cells? This will allow users to delete a column right away even if they haven't updated it yet. In the FE code, we depend on knowing which header/criteria cells came from the BE, and use the presence of the `action` key to do so.
 - The first time(?) the `task` endpoint gets a PATCH call with `rubricAction: "edit"` it responds with a 500. Subsequent PATCH calls with `rubricAction: "edit"` respond with 200s.
 
 ## Big list of TODone's!
+- BE task: Remove the extra label on the Wizard radio buttons (asked BE to handle)
+- BE task: When the init screen of the rubric is filled out and submitted to task/rubric, the rubric comes back populated with a suggested set of cells, as expected. Can we add `action:update` to those cells? This will allow users to delete a column right away even if they haven't updated it yet. In the FE code, we depend on knowing which header/criteria cells came from the BE, and use the presence of the `action` key to do so.
+- BE task: BE label in Wizard is not translated (assigned ticket to BE)
+- Ask BE if they will please add the `action` property to the stubbed rubrics they create and send when a rubric is first created.
+- Check that when you first save the rubric just after creating it, that the assessment type doesn't change.
+- Wizard - wrap the "Create rubric" link in an open in new tab button, and send a refresh to the Wizard when tabbing back to the tab, I guess?
+- Replace Submit rubric with Save rubric
+- Hook up the Edit pencil button next to the rubric title
 - Figure out why deleting two rows doesn't delete the two rows it should (e.g. in a table with row0, row1, row2, and row3, deleting row1 and row2 ends up deleting row1 and row3). I used to think this was a BE issue but now actually I think this is an FE issue! My best guess is it's something in the computed property. I think the same thing goes for rows. I'm not sure if the issue is in the computed, actually, or maybe it's in the cells not getting the message that they should change?
 - Patch requests to rubric on subsequent calls after making the initial rubric has assessmentType 0! Should be assessmentType whatever, or maybe we can just leave off the assessmentType from the params? idk, investigate more!
 - Figure out why data doesn't update when you click the submit rubric (save) button
