@@ -1,3 +1,7 @@
+## Dates n Times
+
+The call with AA was on Thursday March 6, 2025 at 11:03AM. It lasted for 11mins. It took place via a Slack huddle
+
 ## Feelings about CN
 
 I understand that when it comes to even matters of product and vision, you'll inevitably side with BE over FE. And frankly, I don't care. I will continue the code gymnastics FE is now accustomed to in the absence of strong BE and Product support for FE. I have always supported VT's mission and users and will continue to do so.
