@@ -113,6 +113,11 @@ Task id - Rubric Id
 27547 - 27554
 27546 - 27555
 
+### Assignment links that are ready for students to complete:
+Percent - 29844: https://prod-moodle.voicethread.com/mod/lti/view.php?id=3887
+Points - 29795: https://prod-moodle.voicethread.com/mod/lti/view.php?id=3871
+Passfail - 29726: https://prod-moodle.voicethread.com/mod/lti/view.php?id=3825
+
 ### How to attach a rubricId to a task manually (obsolete)
 1. Get an assignment id
 2. Get a rubric ID I know is valid
