@@ -142,6 +142,11 @@ Passfail - 29726: https://prod-moodle.voicethread.com/mod/lti/view.php?id=3825
 - Check Factories to know if there are still TS errors for Rubrics
 - Place focus on the rubric container when the "show rubric" button is clicked.
 - Make it so that when you tab out of a popover, you tab to the next cell.
+- Ask BE if we can just pass the grade, instead of the whole rubric, when calling /rubric/grade endpoint.
+- Try MH's idea for hasUnsavedChanges (in Notion doc)
+- Ask CN if we should allow users with guidance rubrics to select indicators, or if the rubric should be view-only. Currently when you click on an indicator in a guidance rubric, you get a 500 with "Rubric is not for grading."
+- When you first create a guidance-only rubric, it doesn't save that way on first save in the RubricEdit screen. I think this is an FE problem, we are probably defaulting to isRubricForGrading true and updating incorrectly?
+- When in the rubric flow, disallow editing in the first column of the rubric table when the assessmentType is passfail? (This came from a [Slack thread](https://voicethread.slack.com/archives/C07S81K1LTE/p1755273635368489?thread_ts=1755272657.042779&cid=C07S81K1LTE) where AA suggested this but CN did not confirm.)
 
 ## List of BE Issues
 - The first time(?) the `task` endpoint gets a PATCH call with `rubricAction: "edit"` it responds with a 500. Subsequent PATCH calls with `rubricAction: "edit"` respond with 200s.
