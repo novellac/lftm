@@ -128,10 +128,8 @@ Passfail - 29726: https://prod-moodle.voicethread.com/mod/lti/view.php?id=3825
 
 - Debounce message when someone is on the rubric flow (either screen) and tries to navigate away
 - Confirmation message for delete functionality in the Wizard
-- Disallow points inputs on the RubricIndicators when the assessmentType is passfail
 - Figure out how best to test for taskId being able to be a number
 - Do alllllllll that validation :sob: and figure out what they want validated :sobsob:
-- Handle focus when a user tabs away from a rubric cell popover
 - Make sure that "break-all" is on for ALL table text
 - Make sure that hyphens are on for ALL table text
 - Give a min-w 80px on all cells
@@ -145,13 +143,14 @@ Passfail - 29726: https://prod-moodle.voicethread.com/mod/lti/view.php?id=3825
 - Ask BE if we can just pass the grade, instead of the whole rubric, when calling /rubric/grade endpoint.
 - Try MH's idea for hasUnsavedChanges (in Notion doc)
 - Ask CN if we should allow users with guidance rubrics to select indicators, or if the rubric should be view-only. Currently when you click on an indicator in a guidance rubric, you get a 500 with "Rubric is not for grading."
-- When you first create a guidance-only rubric, it doesn't save that way on first save in the RubricEdit screen. I think this is an FE problem, we are probably defaulting to isRubricForGrading true and updating incorrectly?
+- When you first create a guidance-only rubric, it doesn't save that way on first save in the RubricEdit screen. I think this is an FE problem, we are probably defaulting to isRubricForGrading true and updating incorrectly? (Actually I think this ended up being a BE issue - re-check!)
 - When in the rubric flow, disallow editing in the first column of the rubric table when the assessmentType is passfail? (This came from a [Slack thread](https://voicethread.slack.com/archives/C07S81K1LTE/p1755273635368489?thread_ts=1755272657.042779&cid=C07S81K1LTE) where AA suggested this but CN did not confirm.)
 
 ## List of BE Issues
 - The first time(?) the `task` endpoint gets a PATCH call with `rubricAction: "edit"` it responds with a 500. Subsequent PATCH calls with `rubricAction: "edit"` respond with 200s.
 
 ## Big list of TODone's!
+- Disallow points inputs on the RubricIndicators when the assessmentType is passfail
 - BE task: Remove the extra label on the Wizard radio buttons (asked BE to handle)
 - BE task: When the init screen of the rubric is filled out and submitted to task/rubric, the rubric comes back populated with a suggested set of cells, as expected. Can we add `action:update` to those cells? This will allow users to delete a column right away even if they haven't updated it yet. In the FE code, we depend on knowing which header/criteria cells came from the BE, and use the presence of the `action` key to do so.
 - BE task: BE label in Wizard is not translated (assigned ticket to BE)
